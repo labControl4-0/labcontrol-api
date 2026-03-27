@@ -1,3 +1,4 @@
+using System;
 using LabControlApi.DTOs;
 using LabControlApi.Models;
 using LabControlApi.Repositories.Interfaces;
@@ -20,7 +21,7 @@ namespace LabControlApi.Services
 			return users.Select(u => ToDto(u));
 		}
 
-		public async Task<UserResponseDto?> GetByIdAsync(int id)
+		public async Task<UserResponseDto?> GetByIdAsync(Guid id)
 		{
 			var user = await _repository.GetByIdAsync(id);
 			return user == null ? null : ToDto(user);
@@ -37,7 +38,7 @@ namespace LabControlApi.Services
 			return ToDto(created);
 		}
 
-		public async Task<UserResponseDto?> UpdateAsync(int id, UpdateUserDto dto)
+		public async Task<UserResponseDto?> UpdateAsync(Guid id, UpdateUserDto dto)
 		{
 			var user = new User
 			{
@@ -49,7 +50,7 @@ namespace LabControlApi.Services
 			return updated == null ? null : ToDto(updated);
 		}
 
-		public async Task<bool> DeleteAsync(int id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
 			return await _repository.DeleteAsync(id);
 		}

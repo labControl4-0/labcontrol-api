@@ -23,7 +23,7 @@ namespace LabControlApi.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<UserResponseDto>> GetById(int id)
+		public async Task<ActionResult<UserResponseDto>> GetById(Guid id)
 		{
 			var user = await _service.GetByIdAsync(id);
 			if (user == null) return NotFound();
@@ -38,7 +38,7 @@ namespace LabControlApi.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<ActionResult<UserResponseDto>> Update(int id, [FromBody] UpdateUserDto dto)
+		public async Task<ActionResult<UserResponseDto>> Update(Guid id, [FromBody] UpdateUserDto dto)
 		{
 			var updated = await _service.UpdateAsync(id, dto);
 			if (updated == null) return NotFound();
@@ -46,7 +46,7 @@ namespace LabControlApi.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> Delete(int id)
+		public async Task<IActionResult> Delete(Guid id)
 		{
 			var deleted = await _service.DeleteAsync(id);
 			if (!deleted) return NotFound();

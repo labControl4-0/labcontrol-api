@@ -13,6 +13,12 @@ namespace LabControlApi.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<User>(entity =>
+			{
+				entity.HasKey(u => u.Id);
+				entity.Property(u => u.Id).ValueGeneratedOnAdd();
+			});
+
 			modelBuilder.ApplyConfiguration<PlantVersion>(new ModelConfiguration());
 			modelBuilder.ApplyConfiguration<Sector>(new ModelConfiguration());
 		}

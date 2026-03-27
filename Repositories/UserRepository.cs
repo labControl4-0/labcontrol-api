@@ -1,4 +1,4 @@
-
+using System;
 using LabControlApi.Models;
 using LabControlApi.Data;
 using LabControlApi.Repositories.Interfaces;
@@ -20,9 +20,9 @@ namespace LabControlApi.Repositories
 			return await _context.Users.ToListAsync();
 		}
 
-		public async Task<User?> GetByIdAsync(int id)
+		public async Task<User?> GetByIdAsync(Guid id)
 		{
-			return await _context.Users.FindAsync(id);
+			return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 		}
 
 		public async Task<User> AddAsync(User user)
@@ -34,21 +34,39 @@ namespace LabControlApi.Repositories
 
 		public async Task<User?> UpdateAsync(User user)
 		{
-			var existing = await _context.Users.FindAsync(user.Id);
-			if (existing == null) return null;
-			existing.Name = user.Name;
-			existing.Email = user.Email;
+			var existingUser = await GetByIdAsync(user.Id);
+			if (existingUser == null) return null;
+
+			existingUser.Name = user.Name;
+			existingUser.Email = user.Email;
+			existingUser.UpdatedAt = DateTime.UtcNow;
+
+			_context.Users.Update(existingUser);
 			await _context.SaveChangesAsync();
-			return existing;
+
+			return existingUser;
 		}
 
-		public async Task<bool> DeleteAsync(int id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var user = await _context.Users.FindAsync(id);
+			var user = await GetByIdAsync(id);
 			if (user == null) return false;
+
 			_context.Users.Remove(user);
 			await _context.SaveChangesAsync();
+
 			return true;
+		}
+
+		public async Task CreateAsync(User user)
+		{
+			await _context.Users.AddAsync(user);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task<User?> GetByEmailAsync(string email)
+		{
+			return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 		}
 	}
 }

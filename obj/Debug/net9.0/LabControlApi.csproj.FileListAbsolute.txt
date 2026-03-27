@@ -52,3 +52,4 @@
 /home/lucianojr/Documentos/labControlProject/labcontrol-api/obj/Debug/net9.0/LabControlApi.pdb
 /home/lucianojr/Documentos/labControlProject/labcontrol-api/obj/Debug/net9.0/LabControlApi.genruntimeconfig.cache
 /home/lucianojr/Documentos/labControlProject/labcontrol-api/obj/Debug/net9.0/ref/LabControlApi.dll
+/home/lucianojr/Documentos/labControlProject/labcontrol-api/bin/Debug/net9.0/BCrypt.Net-Next.dll
