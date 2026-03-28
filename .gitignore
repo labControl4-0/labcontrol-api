@@ -1,0 +1,32 @@
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore logs
+*.log
+
+# Ignore compiled DLLs and PDBs
+*.dll
+*.pdb
+*.exe
+*.cache
+*.json
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Ignore other system files
+.DS_Store
+Thumbs.db
