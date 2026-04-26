@@ -6,7 +6,7 @@ namespace LabControlApi.Repositories.Interfaces
     {
         Task<IEnumerable<Sector>> GetByPlantVersionIdAsync(Guid plantVersionId);
         Task<Sector?> GetByIdAsync(Guid id);
-        Task CreateAsync(Sector sector);
+        Task<Sector> AddAsync(Sector sector);
         Task UpdateAsync(Sector sector);
         Task DeleteAsync(Guid id);
     }

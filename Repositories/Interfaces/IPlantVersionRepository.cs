@@ -4,10 +4,9 @@ namespace LabControlApi.Repositories.Interfaces
 {
     public interface IPlantVersionRepository
     {
-        Task<IEnumerable<PlantVersion>> GetAllAsync();
+        Task<IEnumerable<PlantVersion>> GetByPlantIdAsync(Guid plantId);
         Task<PlantVersion?> GetByIdAsync(Guid id);
-        Task CreateAsync(PlantVersion plantVersion);
+        Task<PlantVersion> AddAsync(PlantVersion plantVersion);
         Task UpdateAsync(PlantVersion plantVersion);
-        Task DeleteAsync(Guid id);
     }
 }

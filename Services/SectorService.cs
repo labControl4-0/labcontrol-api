@@ -1,63 +1,64 @@
 using LabControlApi.DTOs;
+using LabControlApi.DTOs.Sector;
 using LabControlApi.Models;
 using LabControlApi.Repositories.Interfaces;
 using LabControlApi.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text.Json;
 
 namespace LabControlApi.Services
 {
     public class SectorService : ISectorService
     {
-        private readonly ISectorRepository _repository;
+        private readonly ISectorRepository _sectorRepository;
+        private readonly IPlantVersionRepository _plantVersionRepository;
+        private readonly IPlantRepository _plantRepository;
 
-        public SectorService(ISectorRepository repository)
+        public SectorService(ISectorRepository sectorRepository, IPlantVersionRepository plantVersionRepository, IPlantRepository plantRepository)
         {
-            _repository = repository;
+            _sectorRepository = sectorRepository;
+            _plantVersionRepository = plantVersionRepository;
+            _plantRepository = plantRepository;
         }
 
-        public async Task<IEnumerable<SectorResponseDto>> GetByPlantVersionIdAsync(Guid plantVersionId)
+        public async Task<IEnumerable<SectorResponseDto>> GetSectors(Guid versionId, Guid userId)
         {
-            var sectors = await _repository.GetByPlantVersionIdAsync(plantVersionId);
+            var version = await _plantVersionRepository.GetByIdAsync(versionId);
+            if (version == null) return new List<SectorResponseDto>();
+
+            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            if (plant == null) return new List<SectorResponseDto>();
+
+            var sectors = await _sectorRepository.GetByPlantVersionIdAsync(versionId);
             return sectors.Select(s => new SectorResponseDto
             {
                 Id = s.Id,
+                PlantVersionId = s.PlantVersionId,
                 Name = s.Name,
                 Type = s.Type,
                 Color = s.Color,
-                MinX = s.MinX,
-                MinY = s.MinY,
-                MaxX = s.MaxX,
-                MaxY = s.MaxY,
-                AreaM2 = s.AreaM2,
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt
+                PointsJson = s.PointsJson,
+                AreaM2 = (double)(s.AreaM2 ?? 0)
             });
         }
 
-        public async Task<SectorResponseDto?> GetByIdAsync(Guid id)
+        public async Task<SectorResponseDto> CreateSector(CreateSectorDto createDto, Guid userId)
         {
-            var sector = await _repository.GetByIdAsync(id);
-            if (sector == null) return null;
-
-            return new SectorResponseDto
+            var version = await _plantVersionRepository.GetByIdAsync(createDto.PlantVersionId);
+            if (version == null)
             {
-                Id = sector.Id,
-                Name = sector.Name,
-                Type = sector.Type,
-                Color = sector.Color,
-                MinX = sector.MinX,
-                MinY = sector.MinY,
-                MaxX = sector.MaxX,
-                MaxY = sector.MaxY,
-                AreaM2 = sector.AreaM2,
-                CreatedAt = sector.CreatedAt,
-                UpdatedAt = sector.UpdatedAt
-            };
-        }
+                throw new Exception("Plant version not found");
+            }
 
-        public async Task CreateAsync(CreateSectorDto createDto)
-        {
-            var points = createDto.Points.Select(p => new Models.PointDto { X = p.X, Y = p.Y }).ToList();
+            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            if (plant == null)
+            {
+                throw new Exception("User does not have access to this plant");
+            }
+
             var sector = new Sector
             {
                 Id = Guid.NewGuid(),
@@ -65,40 +66,76 @@ namespace LabControlApi.Services
                 Name = createDto.Name,
                 Type = createDto.Type,
                 Color = createDto.Color,
-                PointsJson = JsonSerializer.Serialize(points),
-                MinX = points.Min(p => p.X),
-                MinY = points.Min(p => p.Y),
-                MaxX = points.Max(p => p.X),
-                MaxY = points.Max(p => p.Y),
-                AreaM2 = SectorExtensions.CalculatePolygonArea(points)
+                PointsJson = JsonSerializer.Serialize(createDto.Points),
+                AreaM2 = createDto.AreaM2,
+                CreatedAt = DateTime.UtcNow
             };
 
-            await _repository.CreateAsync(sector);
+            await _sectorRepository.AddAsync(sector);
+
+            return new SectorResponseDto
+            {
+                Id = sector.Id,
+                PlantVersionId = sector.PlantVersionId,
+                Name = sector.Name,
+                Type = sector.Type,
+                Color = sector.Color,
+                PointsJson = sector.PointsJson,
+                AreaM2 = (double)sector.AreaM2,
+                CreatedAt = sector.CreatedAt
+            };
         }
 
-        public async Task UpdateAsync(Guid id, UpdateSectorDto updateDto)
+        public async Task UpdateSector(Guid id, UpdateSectorDto updateDto, Guid userId)
         {
-            var sector = await _repository.GetByIdAsync(id);
-            if (sector == null) return;
+            var sector = await _sectorRepository.GetByIdAsync(id);
+            if (sector == null)
+            {
+                throw new Exception("Sector not found");
+            }
 
-            var points = updateDto.Points.Select(p => new Models.PointDto { X = p.X, Y = p.Y }).ToList();
+            var version = await _plantVersionRepository.GetByIdAsync(sector.PlantVersionId);
+            if (version == null)
+            {
+                throw new Exception("Plant version not found");
+            }
+
+            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            if (plant == null)
+            {
+                throw new Exception("User does not have access to this plant");
+            }
+
             sector.Name = updateDto.Name;
             sector.Type = updateDto.Type;
             sector.Color = updateDto.Color;
-            sector.PointsJson = JsonSerializer.Serialize(points);
-            sector.MinX = points.Min(p => p.X);
-            sector.MinY = points.Min(p => p.Y);
-            sector.MaxX = points.Max(p => p.X);
-            sector.MaxY = points.Max(p => p.Y);
-            sector.AreaM2 = SectorExtensions.CalculatePolygonArea(points);
-            sector.UpdatedAt = DateTime.UtcNow;
+            sector.PointsJson = JsonSerializer.Serialize(updateDto.Points);
+            sector.AreaM2 = updateDto.AreaM2;
 
-            await _repository.UpdateAsync(sector);
+            await _sectorRepository.UpdateAsync(sector);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteSector(Guid id, Guid userId)
         {
-            await _repository.DeleteAsync(id);
+            var sector = await _sectorRepository.GetByIdAsync(id);
+            if (sector == null)
+            {
+                throw new Exception("Sector not found");
+            }
+
+            var version = await _plantVersionRepository.GetByIdAsync(sector.PlantVersionId);
+            if (version == null)
+            {
+                throw new Exception("Plant version not found");
+            }
+
+            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            if (plant == null)
+            {
+                throw new Exception("User does not have access to this plant");
+            }
+
+            await _sectorRepository.DeleteAsync(id);
         }
     }
 }

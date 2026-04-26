@@ -5,49 +5,45 @@ using Microsoft.AspNetCore.Mvc;
 namespace LabControlApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/sectors")]
     public class SectorController : ControllerBase
     {
-        private readonly ISectorService _service;
+        private readonly ISectorService _sectorService;
 
-        public SectorController(ISectorService service)
+        public SectorController(ISectorService sectorService)
         {
-            _service = service;
+            _sectorService = sectorService;
         }
 
-        [HttpGet("plant/{plantVersionId}")]
-        public async Task<IActionResult> GetByPlantVersionId(Guid plantVersionId)
+        [HttpGet("plantVersion/{plantVersionId}")]
+        public async Task<ActionResult<IEnumerable<SectorResponseDto>>> GetSectorsByPlantVersion(Guid plantVersionId)
         {
-            var sectors = await _service.GetByPlantVersionIdAsync(plantVersionId);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var sectors = await _sectorService.GetSectors(plantVersionId, userId);
             return Ok(sectors);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var sector = await _service.GetByIdAsync(id);
-            if (sector == null) return NotFound();
-            return Ok(sector);
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Create(CreateSectorDto createDto)
+        public async Task<ActionResult<SectorResponseDto>> CreateSector(CreateSectorDto createDto)
         {
-            await _service.CreateAsync(createDto);
-            return CreatedAtAction(nameof(GetById), new { id = createDto.PlantVersionId }, createDto);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var newSector = await _sectorService.CreateSector(createDto, userId);
+            return CreatedAtAction(nameof(GetSectorsByPlantVersion), new { plantVersionId = newSector.PlantVersionId }, newSector);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateSectorDto updateDto)
+        public async Task<IActionResult> UpdateSector(Guid id, UpdateSectorDto updateDto)
         {
-            await _service.UpdateAsync(id, updateDto);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            await _sectorService.UpdateSector(id, updateDto, userId);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteSector(Guid id)
         {
-            await _service.DeleteAsync(id);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            await _sectorService.DeleteSector(id, userId);
             return NoContent();
         }
     }

@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using LabControlApi.Data;
 using LabControlApi.Repositories;
@@ -17,7 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy => policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("http://localhost:3000", "http://localhost:8080")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -35,6 +34,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registrar repositórios e serviços
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPlantRepository, PlantRepository>();
+builder.Services.AddScoped<IPlantService, PlantService>();
+builder.Services.AddScoped<IPlantVersionRepository, PlantVersionRepository>();
+builder.Services.AddScoped<IPlantVersionService, PlantVersionService>();
+builder.Services.AddScoped<ISectorRepository, SectorRepository>();
+builder.Services.AddScoped<ISectorService, SectorService>();
+builder.Services.AddScoped<IMachineRepository, MachineRepository>();
+builder.Services.AddScoped<IMachineService, MachineService>();
+builder.Services.AddScoped<IMachineMetricRepository, MachineMetricRepository>();
+builder.Services.AddScoped<IMachineMetricService, MachineMetricService>();
+builder.Services.AddScoped<IMachineEventRepository, MachineEventRepository>();
+builder.Services.AddScoped<IMachineEventService, MachineEventService>();
 
 // Adicionar controllers e Swagger
 builder.Services.AddControllers();
@@ -43,6 +54,10 @@ builder.Services.AddSwaggerGen();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException("JWT key is not configured.");
+}
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 builder.Services.AddAuthentication(options =>
 {

@@ -24,10 +24,11 @@ namespace LabControlApi.Repositories
             return await _context.Sectors.FindAsync(id);
         }
 
-        public async Task CreateAsync(Sector sector)
+        public async Task<Sector> AddAsync(Sector sector)
         {
-            await _context.Sectors.AddAsync(sector);
+            _context.Sectors.Add(sector);
             await _context.SaveChangesAsync();
+            return sector;
         }
 
         public async Task UpdateAsync(Sector sector)

@@ -1,13 +1,15 @@
-using LabControlApi.DTOs;
+using LabControlApi.DTOs.PlantVersion;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LabControlApi.Services.Interfaces
 {
     public interface IPlantVersionService
     {
-        Task<IEnumerable<PlantVersionResponseDto>> GetAllAsync();
-        Task<PlantVersionResponseDto?> GetByIdAsync(Guid id);
-        Task CreateAsync(CreatePlantVersionDto createDto);
-        Task UpdateAsync(Guid id, CreatePlantVersionDto updateDto);
-        Task DeleteAsync(Guid id);
+        Task<IEnumerable<PlantVersionResponseDto>> GetVersions(Guid plantId, Guid userId);
+        Task<PlantVersionResponseDto> CreateVersion(CreatePlantVersionDto dto, Guid userId);
+        Task<PlantVersionResponseDto?> CloneVersion(Guid versionId, Guid userId);
+        Task ActivateVersion(Guid versionId, Guid userId);
     }
 }

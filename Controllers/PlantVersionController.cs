@@ -1,4 +1,4 @@
-using LabControlApi.DTOs;
+using LabControlApi.DTOs.PlantVersion;
 using LabControlApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,46 +8,46 @@ namespace LabControlApi.Controllers
     [Route("api/[controller]")]
     public class PlantVersionController : ControllerBase
     {
-        private readonly IPlantVersionService _service;
+        private readonly IPlantVersionService _plantVersionService;
 
-        public PlantVersionController(IPlantVersionService service)
+        public PlantVersionController(IPlantVersionService plantVersionService)
         {
-            _service = service;
+            _plantVersionService = plantVersionService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{plantId}")]
+        public async Task<IActionResult> GetVersions(Guid plantId)
         {
-            var plantVersions = await _service.GetAllAsync();
-            return Ok(plantVersions);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var plantVersion = await _service.GetByIdAsync(id);
-            if (plantVersion == null) return NotFound();
-            return Ok(plantVersion);
+            var userId = Guid.Parse(User.FindFirst("id")!.Value);
+            var versions = await _plantVersionService.GetVersions(plantId, userId);
+            return Ok(versions);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreatePlantVersionDto createDto)
+        public async Task<IActionResult> Create(CreatePlantVersionDto dto)
         {
-            await _service.CreateAsync(createDto);
-            return CreatedAtAction(nameof(GetById), new { id = createDto.Name }, createDto);
+            var userId = Guid.Parse(User.FindFirst("id")!.Value);
+            var version = await _plantVersionService.CreateVersion(dto, userId);
+            return Ok(version);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, CreatePlantVersionDto updateDto)
+        [HttpPost("{versionId}/clone")]
+        public async Task<IActionResult> Clone(Guid versionId)
         {
-            await _service.UpdateAsync(id, updateDto);
-            return NoContent();
+            var userId = Guid.Parse(User.FindFirst("id")!.Value);
+            var version = await _plantVersionService.CloneVersion(versionId, userId);
+
+            if (version == null)
+                return NotFound();
+
+            return Ok(version);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPost("{versionId}/activate")]
+        public async Task<IActionResult> Activate(Guid versionId)
         {
-            await _service.DeleteAsync(id);
+            var userId = Guid.Parse(User.FindFirst("id")!.Value);
+            await _plantVersionService.ActivateVersion(versionId, userId);
             return NoContent();
         }
     }

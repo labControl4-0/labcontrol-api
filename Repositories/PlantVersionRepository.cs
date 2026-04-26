@@ -14,36 +14,27 @@ namespace LabControlApi.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<PlantVersion>> GetAllAsync()
+        public async Task<IEnumerable<PlantVersion>> GetByPlantIdAsync(Guid plantId)
         {
-            return await _context.PlantVersions.ToListAsync();
+            return await _context.PlantVersions.Where(pv => pv.PlantId == plantId).ToListAsync();
         }
 
         public async Task<PlantVersion?> GetByIdAsync(Guid id)
         {
-            return await _context.PlantVersions.FindAsync(id);
+            return await _context.PlantVersions.Include(pv => pv.Sectors).FirstOrDefaultAsync(pv => pv.Id == id);
         }
 
-        public async Task CreateAsync(PlantVersion plantVersion)
+        public async Task<PlantVersion> AddAsync(PlantVersion plantVersion)
         {
-            await _context.PlantVersions.AddAsync(plantVersion);
+            _context.PlantVersions.Add(plantVersion);
             await _context.SaveChangesAsync();
+            return plantVersion;
         }
 
         public async Task UpdateAsync(PlantVersion plantVersion)
         {
-            _context.PlantVersions.Update(plantVersion);
+            _context.Entry(plantVersion).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var plantVersion = await GetByIdAsync(id);
-            if (plantVersion != null)
-            {
-                _context.PlantVersions.Remove(plantVersion);
-                await _context.SaveChangesAsync();
-            }
         }
     }
 }

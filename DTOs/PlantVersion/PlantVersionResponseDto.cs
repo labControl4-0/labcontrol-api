@@ -1,14 +1,14 @@
-namespace LabControlApi.DTOs
+using System;
+
+namespace LabControlApi.DTOs.PlantVersion
 {
     public class PlantVersionResponseDto
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public decimal WidthUnits { get; set; }
-        public decimal HeightUnits { get; set; }
-        public decimal Scale { get; set; }
+        public Guid PlantId { get; set; }
         public int VersionNumber { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid CreatedBy { get; set; }
     }
 }
