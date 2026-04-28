@@ -85,6 +85,7 @@ namespace LabControlApi.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
+                    new Claim("id", user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Name, user.Name),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),

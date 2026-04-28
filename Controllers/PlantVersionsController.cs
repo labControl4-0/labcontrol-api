@@ -16,7 +16,7 @@ namespace LabControlApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlantVersionResponseDto>>> GetVersions(Guid plantId)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var versions = await _plantVersionService.GetVersions(plantId, userId);
             return Ok(versions);
         }
@@ -24,7 +24,7 @@ namespace LabControlApi.Controllers
         [HttpPost]
         public async Task<ActionResult<PlantVersionResponseDto>> CreateVersion(Guid plantId, CreatePlantVersionDto dto)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             dto.PlantId = plantId;
             var newVersion = await _plantVersionService.CreateVersion(dto, userId);
             return CreatedAtAction(nameof(GetVersions), new { plantId = newVersion.PlantId }, newVersion);
@@ -33,7 +33,8 @@ namespace LabControlApi.Controllers
         [HttpPost("{versionId}/clone")]
         public async Task<ActionResult<PlantVersionResponseDto>> CloneVersion(Guid versionId)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            // Correção aqui
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var clonedVersion = await _plantVersionService.CloneVersion(versionId, userId);
             if (clonedVersion == null)
             {
@@ -45,7 +46,7 @@ namespace LabControlApi.Controllers
         [HttpPatch("{versionId}/activate")]
         public async Task<IActionResult> ActivateVersion(Guid versionId)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             await _plantVersionService.ActivateVersion(versionId, userId);
             return NoContent();
         }

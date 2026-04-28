@@ -42,7 +42,7 @@ namespace LabControlApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MachineEventResponseDto>> CreateEvent(CreateMachineEventDto dto)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var newEvent = await _eventService.CreateEvent(dto, userId);
             return CreatedAtAction(nameof(GetEvents), new { machineId = newEvent.MachineId }, newEvent);
         }

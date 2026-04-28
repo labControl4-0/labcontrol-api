@@ -18,7 +18,7 @@ namespace LabControlApi.Controllers
         [HttpGet("plantVersion/{plantVersionId}")]
         public async Task<ActionResult<IEnumerable<SectorResponseDto>>> GetSectorsByPlantVersion(Guid plantVersionId)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var sectors = await _sectorService.GetSectors(plantVersionId, userId);
             return Ok(sectors);
         }
@@ -26,7 +26,7 @@ namespace LabControlApi.Controllers
         [HttpPost]
         public async Task<ActionResult<SectorResponseDto>> CreateSector(CreateSectorDto createDto)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var newSector = await _sectorService.CreateSector(createDto, userId);
             return CreatedAtAction(nameof(GetSectorsByPlantVersion), new { plantVersionId = newSector.PlantVersionId }, newSector);
         }
@@ -34,7 +34,7 @@ namespace LabControlApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSector(Guid id, UpdateSectorDto updateDto)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             await _sectorService.UpdateSector(id, updateDto, userId);
             return NoContent();
         }
@@ -42,7 +42,7 @@ namespace LabControlApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSector(Guid id)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == "id").Value);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             await _sectorService.DeleteSector(id, userId);
             return NoContent();
         }
