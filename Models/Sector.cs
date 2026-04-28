@@ -24,6 +24,7 @@ namespace LabControlApi.Models
 
         // Navigation property
         public PlantVersion PlantVersion { get; set; } = null!;
+        public ICollection<Machine> Machines { get; set; } = new List<Machine>();
     }
 
     public static class SectorExtensions

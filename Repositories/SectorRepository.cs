@@ -39,9 +39,19 @@ namespace LabControlApi.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var sector = await GetByIdAsync(id);
+            var sector = await _context.Sectors
+                .Include(s => s.Machines) // Include the machines in the sector
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (sector != null)
             {
+                // First, remove all machines within the sector
+                if (sector.Machines != null && sector.Machines.Any())
+                {
+                    _context.Machines.RemoveRange(sector.Machines);
+                }
+
+                // Then, remove the sector itself
                 _context.Sectors.Remove(sector);
                 await _context.SaveChangesAsync();
             }
