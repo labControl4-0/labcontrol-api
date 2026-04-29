@@ -16,7 +16,7 @@ obj/
 *.pdb
 *.exe
 *.cache
-*.json
+*.Production.json
 
 # Ignore temporary files
 *.tmp
