@@ -172,63 +172,6 @@ namespace LabControlApi.Migrations
                     b.ToTable("Plants");
                 });
 
-            modelBuilder.Entity("LabControlApi.Models.PlantVersion", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ActivatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ActivatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ActivatorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("HeightUnits")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("PlantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Scale")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("VersionNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WidthUnits")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivatorId");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("PlantId");
-
-                    b.HasIndex("PlantId", "VersionNumber")
-                        .IsUnique();
-
-                    b.ToTable("PlantVersions");
-                });
-
             modelBuilder.Entity("LabControlApi.Models.Sector", b =>
                 {
                     b.Property<Guid>("Id")
@@ -236,7 +179,8 @@ namespace LabControlApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal?>("AreaM2")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -246,22 +190,26 @@ namespace LabControlApi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("MaxX")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("MaxY")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("MinX")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("MinY")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("PlantVersionId")
+                    b.Property<Guid>("PlantId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("PointsJson")
@@ -277,7 +225,7 @@ namespace LabControlApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlantVersionId");
+                    b.HasIndex("PlantId");
 
                     b.ToTable("Sectors");
                 });
@@ -336,8 +284,9 @@ namespace LabControlApi.Migrations
                         .IsRequired();
 
                     b.HasOne("LabControlApi.Models.Sector", "Sector")
-                        .WithMany()
-                        .HasForeignKey("SectorId");
+                        .WithMany("Machines")
+                        .HasForeignKey("SectorId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Plant");
 
@@ -347,7 +296,7 @@ namespace LabControlApi.Migrations
             modelBuilder.Entity("LabControlApi.Models.MachineEvent", b =>
                 {
                     b.HasOne("LabControlApi.Models.Machine", "Machine")
-                        .WithMany("Events")
+                        .WithMany("MachineEvents")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -358,7 +307,7 @@ namespace LabControlApi.Migrations
             modelBuilder.Entity("LabControlApi.Models.MachineMetric", b =>
                 {
                     b.HasOne("LabControlApi.Models.Machine", "Machine")
-                        .WithMany("Metrics")
+                        .WithMany("MachineMetrics")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -377,59 +326,34 @@ namespace LabControlApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LabControlApi.Models.PlantVersion", b =>
+            modelBuilder.Entity("LabControlApi.Models.Sector", b =>
                 {
-                    b.HasOne("LabControlApi.Models.User", "Activator")
-                        .WithMany()
-                        .HasForeignKey("ActivatorId");
-
-                    b.HasOne("LabControlApi.Models.User", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LabControlApi.Models.Plant", "Plant")
-                        .WithMany("Versions")
+                        .WithMany("Sectors")
                         .HasForeignKey("PlantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Activator");
-
-                    b.Navigation("Creator");
-
                     b.Navigation("Plant");
-                });
-
-            modelBuilder.Entity("LabControlApi.Models.Sector", b =>
-                {
-                    b.HasOne("LabControlApi.Models.PlantVersion", "PlantVersion")
-                        .WithMany("Sectors")
-                        .HasForeignKey("PlantVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PlantVersion");
                 });
 
             modelBuilder.Entity("LabControlApi.Models.Machine", b =>
                 {
-                    b.Navigation("Events");
+                    b.Navigation("MachineEvents");
 
-                    b.Navigation("Metrics");
+                    b.Navigation("MachineMetrics");
                 });
 
             modelBuilder.Entity("LabControlApi.Models.Plant", b =>
                 {
                     b.Navigation("Machines");
 
-                    b.Navigation("Versions");
+                    b.Navigation("Sectors");
                 });
 
-            modelBuilder.Entity("LabControlApi.Models.PlantVersion", b =>
+            modelBuilder.Entity("LabControlApi.Models.Sector", b =>
                 {
-                    b.Navigation("Sectors");
+                    b.Navigation("Machines");
                 });
 
             modelBuilder.Entity("LabControlApi.Models.User", b =>

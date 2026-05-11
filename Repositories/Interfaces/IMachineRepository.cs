@@ -12,5 +12,6 @@ namespace LabControlApi.Repositories.Interfaces
         Task<Machine> AddAsync(Machine machine);
         Task UpdateAsync(Machine machine);
         Task DeleteAsync(Guid id);
+        Task DeleteBySectorIdAsync(Guid sectorId);
     }
 }

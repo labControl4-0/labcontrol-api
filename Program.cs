@@ -36,8 +36,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlantRepository, PlantRepository>();
 builder.Services.AddScoped<IPlantService, PlantService>();
-builder.Services.AddScoped<IPlantVersionRepository, PlantVersionRepository>();
-builder.Services.AddScoped<IPlantVersionService, PlantVersionService>();
 builder.Services.AddScoped<ISectorRepository, SectorRepository>();
 builder.Services.AddScoped<ISectorService, SectorService>();
 builder.Services.AddScoped<IMachineRepository, MachineRepository>();

@@ -8,7 +8,6 @@ global using Microsoft.AspNetCore.Mvc;
 global using LabControlApi.Models;
 global using LabControlApi.DTOs;
 global using LabControlApi.DTOs.Plant;
-global using LabControlApi.DTOs.PlantVersion;
 global using LabControlApi.DTOs.Sector;
 global using LabControlApi.DTOs.Machine;
 global using LabControlApi.DTOs.Event;

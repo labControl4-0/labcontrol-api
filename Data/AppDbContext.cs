@@ -9,7 +9,6 @@ namespace LabControlApi.Data
 
 		public DbSet<User> Users { get; set; }
         public DbSet<Plant> Plants { get; set; }
-        public DbSet<PlantVersion> PlantVersions { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Machine> Machines { get; set; }
         public DbSet<MachineMetric> MachineMetrics { get; set; }
@@ -36,38 +35,19 @@ namespace LabControlApi.Data
                 entity.Property(p => p.HeightUnits).HasPrecision(10, 2);
                 entity.HasIndex(p => p.UserId);
 
-                entity.HasMany(p => p.Versions)
-                      .WithOne(pv => pv.Plant)
-                      .HasForeignKey(pv => pv.PlantId);
-                
+                entity.HasMany(p => p.Sectors)
+                      .WithOne(s => s.Plant)
+                      .HasForeignKey(s => s.PlantId);
+
                 entity.HasMany(p => p.Machines)
                         .WithOne(m => m.Plant)
                         .HasForeignKey(m => m.PlantId);
             });
 
-            modelBuilder.Entity<PlantVersion>(entity =>
-            {
-                entity.HasKey(pv => pv.Id);
-                entity.HasIndex(pv => pv.PlantId);
-                entity.HasIndex(pv => new { pv.PlantId, pv.VersionNumber }).IsUnique();
-
-                entity.HasOne(pv => pv.Creator)
-                      .WithMany()
-                      .HasForeignKey(pv => pv.CreatedBy);
-
-                entity.HasOne(pv => pv.Plant)
-                      .WithMany(p => p.Versions)
-                      .HasForeignKey(pv => pv.PlantId);
-
-                entity.HasMany(pv => pv.Sectors)
-                      .WithOne(s => s.PlantVersion)
-                      .HasForeignKey(s => s.PlantVersionId);
-            });
-
             modelBuilder.Entity<Sector>(entity =>
             {
                 entity.HasKey(s => s.Id);
-                entity.HasIndex(s => s.PlantVersionId);
+                entity.HasIndex(s => s.PlantId);
             });
 
             modelBuilder.Entity<Machine>(entity =>
@@ -75,11 +55,11 @@ namespace LabControlApi.Data
                 entity.HasKey(m => m.Id);
                 entity.HasIndex(m => m.PlantId);
                 
-                entity.HasMany(m => m.Metrics)
+                entity.HasMany(m => m.MachineMetrics)
                       .WithOne(mm => mm.Machine)
                       .HasForeignKey(mm => mm.MachineId);
 
-                entity.HasMany(m => m.Events)
+                entity.HasMany(m => m.MachineEvents)
                         .WithOne(me => me.Machine)
                         .HasForeignKey(me => me.MachineId);
             });
@@ -95,6 +75,14 @@ namespace LabControlApi.Data
                 entity.HasKey(me => me.Id);
                 entity.HasIndex(me => me.MachineId);
             });
+
+            modelBuilder.Entity<Sector>()
+                .HasMany(s => s.Machines)
+                .WithOne(m => m.Sector)
+                .HasForeignKey(m => m.SectorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.ApplyConfiguration<Sector>(new ModelConfiguration());
 		}
 	}
 }

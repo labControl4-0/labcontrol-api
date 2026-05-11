@@ -14,29 +14,26 @@ namespace LabControlApi.Services
     public class SectorService : ISectorService
     {
         private readonly ISectorRepository _sectorRepository;
-        private readonly IPlantVersionRepository _plantVersionRepository;
         private readonly IPlantRepository _plantRepository;
+        private readonly IMachineRepository _machineRepository;
 
-        public SectorService(ISectorRepository sectorRepository, IPlantVersionRepository plantVersionRepository, IPlantRepository plantRepository)
+        public SectorService(ISectorRepository sectorRepository, IPlantRepository plantRepository, IMachineRepository machineRepository)
         {
             _sectorRepository = sectorRepository;
-            _plantVersionRepository = plantVersionRepository;
             _plantRepository = plantRepository;
+            _machineRepository = machineRepository;
         }
 
-        public async Task<IEnumerable<SectorResponseDto>> GetSectors(Guid versionId, Guid userId)
+        public async Task<IEnumerable<SectorResponseDto>> GetSectors(Guid plantId, Guid userId)
         {
-            var version = await _plantVersionRepository.GetByIdAsync(versionId);
-            if (version == null) return new List<SectorResponseDto>();
-
-            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            var plant = await _plantRepository.GetByIdAsync(plantId, userId);
             if (plant == null) return new List<SectorResponseDto>();
 
-            var sectors = await _sectorRepository.GetByPlantVersionIdAsync(versionId);
+            var sectors = await _sectorRepository.GetByPlantIdAsync(plantId);
             return sectors.Select(s => new SectorResponseDto
             {
                 Id = s.Id,
-                PlantVersionId = s.PlantVersionId,
+                PlantId = s.PlantId,
                 Name = s.Name,
                 Type = s.Type,
                 Color = s.Color,
@@ -47,13 +44,7 @@ namespace LabControlApi.Services
 
         public async Task<SectorResponseDto> CreateSector(CreateSectorDto createDto, Guid userId)
         {
-            var version = await _plantVersionRepository.GetByIdAsync(createDto.PlantVersionId);
-            if (version == null)
-            {
-                throw new Exception("Plant version not found");
-            }
-
-            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            var plant = await _plantRepository.GetByIdAsync(createDto.PlantId, userId);
             if (plant == null)
             {
                 throw new Exception("User does not have access to this plant");
@@ -62,7 +53,7 @@ namespace LabControlApi.Services
             var sector = new Sector
             {
                 Id = Guid.NewGuid(),
-                PlantVersionId = createDto.PlantVersionId,
+                PlantId = createDto.PlantId,
                 Name = createDto.Name,
                 Type = createDto.Type,
                 Color = createDto.Color,
@@ -76,7 +67,7 @@ namespace LabControlApi.Services
             return new SectorResponseDto
             {
                 Id = sector.Id,
-                PlantVersionId = sector.PlantVersionId,
+                PlantId = sector.PlantId,
                 Name = sector.Name,
                 Type = sector.Type,
                 Color = sector.Color,
@@ -94,13 +85,7 @@ namespace LabControlApi.Services
                 throw new Exception("Sector not found");
             }
 
-            var version = await _plantVersionRepository.GetByIdAsync(sector.PlantVersionId);
-            if (version == null)
-            {
-                throw new Exception("Plant version not found");
-            }
-
-            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            var plant = await _plantRepository.GetByIdAsync(sector.PlantId, userId);
             if (plant == null)
             {
                 throw new Exception("User does not have access to this plant");
@@ -123,13 +108,7 @@ namespace LabControlApi.Services
                 throw new Exception("Sector not found");
             }
 
-            var version = await _plantVersionRepository.GetByIdAsync(sector.PlantVersionId);
-            if (version == null)
-            {
-                throw new Exception("Plant version not found");
-            }
-
-            var plant = await _plantRepository.GetByIdAsync(version.PlantId, userId);
+            var plant = await _plantRepository.GetByIdAsync(sector.PlantId, userId);
             if (plant == null)
             {
                 throw new Exception("User does not have access to this plant");

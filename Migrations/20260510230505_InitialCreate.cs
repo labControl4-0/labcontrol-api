@@ -59,60 +59,20 @@ namespace LabControlApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlantVersions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    WidthUnits = table.Column<int>(type: "integer", nullable: false),
-                    HeightUnits = table.Column<int>(type: "integer", nullable: false),
-                    Scale = table.Column<double>(type: "double precision", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PlantId = table.Column<Guid>(type: "uuid", nullable: false),
-                    VersionNumber = table.Column<int>(type: "integer", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ActivatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ActivatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActivatorId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlantVersions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PlantVersions_Plants_PlantId",
-                        column: x => x.PlantId,
-                        principalTable: "Plants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlantVersions_Users_ActivatorId",
-                        column: x => x.ActivatorId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PlantVersions_Users_CreatedBy",
-                        column: x => x.CreatedBy,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Sectors",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PlantVersionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlantId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<string>(type: "text", nullable: false),
                     PointsJson = table.Column<string>(type: "text", nullable: false),
-                    MinX = table.Column<decimal>(type: "numeric", nullable: false),
-                    MinY = table.Column<decimal>(type: "numeric", nullable: false),
-                    MaxX = table.Column<decimal>(type: "numeric", nullable: false),
-                    MaxY = table.Column<decimal>(type: "numeric", nullable: false),
-                    AreaM2 = table.Column<decimal>(type: "numeric", nullable: true),
+                    MinX = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    MinY = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    MaxX = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    MaxY = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    AreaM2 = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -120,9 +80,9 @@ namespace LabControlApi.Migrations
                 {
                     table.PrimaryKey("PK_Sectors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sectors_PlantVersions_PlantVersionId",
-                        column: x => x.PlantVersionId,
-                        principalTable: "PlantVersions",
+                        name: "FK_Sectors_Plants_PlantId",
+                        column: x => x.PlantId,
+                        principalTable: "Plants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -155,7 +115,8 @@ namespace LabControlApi.Migrations
                         name: "FK_Machines_Sectors_SectorId",
                         column: x => x.SectorId,
                         principalTable: "Sectors",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,30 +191,9 @@ namespace LabControlApi.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlantVersions_ActivatorId",
-                table: "PlantVersions",
-                column: "ActivatorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlantVersions_CreatedBy",
-                table: "PlantVersions",
-                column: "CreatedBy");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlantVersions_PlantId",
-                table: "PlantVersions",
-                column: "PlantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlantVersions_PlantId_VersionNumber",
-                table: "PlantVersions",
-                columns: new[] { "PlantId", "VersionNumber" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sectors_PlantVersionId",
+                name: "IX_Sectors_PlantId",
                 table: "Sectors",
-                column: "PlantVersionId");
+                column: "PlantId");
         }
 
         /// <inheritdoc />
@@ -270,9 +210,6 @@ namespace LabControlApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sectors");
-
-            migrationBuilder.DropTable(
-                name: "PlantVersions");
 
             migrationBuilder.DropTable(
                 name: "Plants");

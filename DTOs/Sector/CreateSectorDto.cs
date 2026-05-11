@@ -4,7 +4,7 @@ namespace LabControlApi.DTOs.Sector
 {
     public class CreateSectorDto
     {
-        public Guid PlantVersionId { get; set; }
+        public Guid PlantId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
         public string Color { get; set; } = string.Empty;

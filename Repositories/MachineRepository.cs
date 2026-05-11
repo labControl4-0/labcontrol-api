@@ -43,10 +43,20 @@ namespace LabControlApi.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var machine = await GetByIdAsync(id);
+            var machine = await _context.Machines.FindAsync(id);
             if (machine != null)
             {
                 _context.Machines.Remove(machine);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteBySectorIdAsync(Guid sectorId)
+        {
+            var machines = await _context.Machines.Where(m => m.SectorId == sectorId).ToListAsync();
+            if (machines.Any())
+            {
+                _context.Machines.RemoveRange(machines);
                 await _context.SaveChangesAsync();
             }
         }

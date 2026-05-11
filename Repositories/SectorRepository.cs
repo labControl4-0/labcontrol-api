@@ -14,9 +14,14 @@ namespace LabControlApi.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Sector>> GetByPlantIdAsync(Guid plantId)
+        {
+            return await _context.Sectors.Where(s => s.PlantId == plantId).ToListAsync();
+        }
+
         public async Task<IEnumerable<Sector>> GetByPlantVersionIdAsync(Guid plantVersionId)
         {
-            return await _context.Sectors.Where(s => s.PlantVersionId == plantVersionId).ToListAsync();
+            return await _context.Sectors.Where(s => s.PlantId == plantVersionId).ToListAsync();
         }
 
         public async Task<Sector?> GetByIdAsync(Guid id)

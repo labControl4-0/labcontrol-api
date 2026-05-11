@@ -17,7 +17,7 @@ namespace LabControlApi.Models
 
         // Navigation properties
         public User User { get; set; } = null!;
-        public ICollection<PlantVersion> Versions { get; set; } = new List<PlantVersion>();
+        public ICollection<Sector> Sectors { get; set; } = new List<Sector>();
         public ICollection<Machine> Machines { get; set; } = new List<Machine>();
     }
 }

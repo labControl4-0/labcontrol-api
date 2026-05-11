@@ -19,7 +19,7 @@ namespace LabControlApi.Models
         // Navigation properties
         public Plant Plant { get; set; } = null!;
         public Sector? Sector { get; set; }
-        public ICollection<MachineMetric> Metrics { get; set; } = new List<MachineMetric>();
-        public ICollection<MachineEvent> Events { get; set; } = new List<MachineEvent>();
+        public ICollection<MachineMetric> MachineMetrics { get; set; } = new List<MachineMetric>();
+        public ICollection<MachineEvent> MachineEvents { get; set; } = new List<MachineEvent>();
     }
 }
