@@ -114,6 +114,13 @@ namespace LabControlApi.Services
                 throw new Exception("User does not have access to this plant");
             }
 
+            // Ensure machines in the sector are removed first. The repository
+            // DeleteAsync already includes Machines and removes them, but calling
+            // the machine repository explicitly makes the intent clear and
+            // guarantees deletion in setups where navigation properties may not
+            // be loaded.
+            await _machineRepository.DeleteBySectorIdAsync(id);
+
             await _sectorRepository.DeleteAsync(id);
         }
     }
