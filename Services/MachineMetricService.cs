@@ -50,9 +50,9 @@ namespace LabControlApi.Services
             var metric = new MachineMetric
             {
                 MachineId = createDto.MachineId,
-                Temperature = createDto.Name == "Temperature" ? createDto.Value : 0,
+                Temperature = string.Equals(createDto.Name, "Temperature", StringComparison.OrdinalIgnoreCase) ? createDto.Value : 0,
                 Rpm = createDto.Name == "Rpm" ? createDto.Value : 0,
-                Vibration = createDto.Name == "Vibration" ? createDto.Value : 0,
+                Vibration = string.Equals(createDto.Name, "Vibration", StringComparison.OrdinalIgnoreCase) ? createDto.Value : 0,
                 EnergyUsage = createDto.Name == "EnergyUsage" ? createDto.Value : 0,
                 CollectedAt = createDto.Timestamp
             };
