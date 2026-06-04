@@ -45,6 +45,9 @@ builder.Services.AddScoped<IMachineMetricService, MachineMetricService>();
 builder.Services.AddScoped<IMachineEventRepository, MachineEventRepository>();
 builder.Services.AddScoped<IMachineEventService, MachineEventService>();
 
+// MQTT integration background service
+builder.Services.AddHostedService<LabControlApi.Services.MqttIntegrationService>();
+
 // Adicionar controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
