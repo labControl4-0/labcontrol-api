@@ -26,7 +26,7 @@ namespace LabControlApi.Services
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _host = config["Mqtt:Host"] ?? "host.docker.internal";
+            _host = config["Mqtt:Host"] ?? "labcontrol-iot-mosquitto-1";
             _port = int.TryParse(config["Mqtt:Port"], out var p) ? p : 1883;
             _topic = config["Mqtt:Topic"] ?? "lab/machine/metrics";
         }
