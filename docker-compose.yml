@@ -14,6 +14,8 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+    networks:
+      - labcontrol-network
 
   postgres:
     image: postgres:15
@@ -27,7 +29,7 @@ services:
       - "5432:5432"
     networks:
       - labcontrol-network
-      
+
 networks:
   labcontrol-network:
     external: true
