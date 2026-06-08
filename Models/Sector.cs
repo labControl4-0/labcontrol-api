@@ -9,12 +9,11 @@ namespace LabControlApi.Models
     public class Sector
     {
         public Guid Id { get; set; }
-        public Guid PlantVersionId { get; set; }
-        public PlantVersion PlantVersion { get; set; } = null!;
+        public Guid PlantId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string? Type { get; set; }
-        public string? Color { get; set; }
-        public string PointsJson { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
+        public string PointsJson { get; set; } = string.Empty; // Store polygon points as JSON
         public decimal MinX { get; set; }
         public decimal MinY { get; set; }
         public decimal MaxX { get; set; }
@@ -23,19 +22,9 @@ namespace LabControlApi.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public List<PointDto> GetPoints()
-        {
-            return JsonSerializer.Deserialize<List<PointDto>>(PointsJson) ?? new List<PointDto>();
-        }
-
-        public void SetPoints(List<PointDto> points)
-        {
-            PointsJson = JsonSerializer.Serialize(points);
-            MinX = points.Min(p => p.X);
-            MinY = points.Min(p => p.Y);
-            MaxX = points.Max(p => p.X);
-            MaxY = points.Max(p => p.Y);
-        }
+        // Navigation properties
+        public Plant Plant { get; set; } = null!;
+        public ICollection<Machine> Machines { get; set; } = new List<Machine>();
     }
 
     public static class SectorExtensions

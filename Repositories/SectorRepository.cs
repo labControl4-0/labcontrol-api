@@ -14,9 +14,14 @@ namespace LabControlApi.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Sector>> GetByPlantIdAsync(Guid plantId)
+        {
+            return await _context.Sectors.Where(s => s.PlantId == plantId).ToListAsync();
+        }
+
         public async Task<IEnumerable<Sector>> GetByPlantVersionIdAsync(Guid plantVersionId)
         {
-            return await _context.Sectors.Where(s => s.PlantVersionId == plantVersionId).ToListAsync();
+            return await _context.Sectors.Where(s => s.PlantId == plantVersionId).ToListAsync();
         }
 
         public async Task<Sector?> GetByIdAsync(Guid id)
@@ -24,10 +29,11 @@ namespace LabControlApi.Repositories
             return await _context.Sectors.FindAsync(id);
         }
 
-        public async Task CreateAsync(Sector sector)
+        public async Task<Sector> AddAsync(Sector sector)
         {
-            await _context.Sectors.AddAsync(sector);
+            _context.Sectors.Add(sector);
             await _context.SaveChangesAsync();
+            return sector;
         }
 
         public async Task UpdateAsync(Sector sector)
@@ -38,9 +44,19 @@ namespace LabControlApi.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var sector = await GetByIdAsync(id);
+            var sector = await _context.Sectors
+                .Include(s => s.Machines) // Include the machines in the sector
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (sector != null)
             {
+                // First, remove all machines within the sector
+                if (sector.Machines != null && sector.Machines.Any())
+                {
+                    _context.Machines.RemoveRange(sector.Machines);
+                }
+
+                // Then, remove the sector itself
                 _context.Sectors.Remove(sector);
                 await _context.SaveChangesAsync();
             }

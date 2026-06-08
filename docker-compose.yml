@@ -1,6 +1,19 @@
 version: '3.9'
 
 services:
+  labcontrol.api:
+    image: ${DOCKER_REGISTRY-}labcontrolapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=labcontroldb;Username=admin;Password=admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:15
