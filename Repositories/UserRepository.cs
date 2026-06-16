@@ -37,8 +37,10 @@ namespace LabControlApi.Repositories
 			var existingUser = await GetByIdAsync(user.Id);
 			if (existingUser == null) return null;
 
-			existingUser.Name = user.Name;
-			existingUser.Email = user.Email;
+			if (!string.IsNullOrEmpty(user.Name))
+				existingUser.Name = user.Name;
+			if (!string.IsNullOrEmpty(user.Email))
+				existingUser.Email = user.Email;
 			existingUser.UpdatedAt = DateTime.UtcNow;
 
 			_context.Users.Update(existingUser);
