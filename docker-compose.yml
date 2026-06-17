@@ -3,6 +3,8 @@ version: '3.9'
 services:
   labcontrol.api:
     image: ${DOCKER_REGISTRY-}labcontrolapi
+    container_name: labcontrol_api
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
