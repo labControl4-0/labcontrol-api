@@ -45,6 +45,9 @@ builder.Services.AddScoped<IMachineMetricService, MachineMetricService>();
 builder.Services.AddScoped<IMachineEventRepository, MachineEventRepository>();
 builder.Services.AddScoped<IMachineEventService, MachineEventService>();
 
+builder.Services.AddScoped<LabControlApi.Services.Interfaces.IChatService, LabControlApi.Services.ChatService>();
+builder.Services.AddHttpClient("gemini");
+
 // MQTT integration background service
 builder.Services.AddHostedService<LabControlApi.Services.MqttIntegrationService>();
 
