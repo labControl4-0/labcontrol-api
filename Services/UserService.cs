@@ -38,14 +38,14 @@ namespace LabControlApi.Services
 			return ToDto(created);
 		}
 
-		public async Task<UserResponseDto?> UpdateAsync(Guid id, UpdateUserDto dto)
+				public async Task<UserResponseDto?> UpdateProfileAsync(Guid id, UpdateUserProfileDto dto)
 		{
-			var user = new User
-			{
-				Id = id,
-				Name = dto.Name,
-				Email = dto.Email
-			};
+			var user = await _repository.GetByIdAsync(id);
+			if (user == null) return null;
+
+			user.Name = dto.Name ?? user.Name;
+			user.Email = dto.Email ?? user.Email;
+
 			var updated = await _repository.UpdateAsync(user);
 			return updated == null ? null : ToDto(updated);
 		}

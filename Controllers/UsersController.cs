@@ -38,9 +38,10 @@ namespace LabControlApi.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<ActionResult<UserResponseDto>> Update(Guid id, [FromBody] UpdateUserDto dto)
+				[HttpPut("{id}/profile")]
+		public async Task<ActionResult<UserResponseDto>> UpdateProfile(Guid id, [FromBody] UpdateUserProfileDto dto)
 		{
-			var updated = await _service.UpdateAsync(id, dto);
+						var updated = await _service.UpdateProfileAsync(id, dto);
 			if (updated == null) return NotFound();
 			return Ok(updated);
 		}
