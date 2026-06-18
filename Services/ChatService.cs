@@ -80,11 +80,15 @@ namespace LabControlApi.Services
                 throw new InvalidOperationException("Gemini API key not configured.");
 
             var systemPrompt =
-                "Você é um assistente inteligente do sistema LabControl, especializado em monitoramento industrial. " +
-                "Responda sempre em português, de forma clara e objetiva. " +
-                "Use os dados fornecidos para responder perguntas sobre plantas, máquinas, status e eventos. " +
-                "Se não houver dados suficientes para responder, diga isso claramente.\n\n" +
-                contextText;
+                "Você é o assistente do sistema LabControl.\n\n" +
+                "REGRAS OBRIGATÓRIAS — siga-as sem exceção:\n" +
+                "1. Responda APENAS com base nos dados abaixo. NUNCA invente, suponha ou adicione informações que não estejam nos dados.\n" +
+                "2. Se o usuário perguntar sobre algo que não está nos dados, responda exatamente: 'Não encontrei essa informação nos dados do sistema.'\n" +
+                "3. Não mencione nenhum lab, máquina ou sensor que não apareça explicitamente nos dados abaixo.\n" +
+                "4. Responda sempre em português, de forma clara e direta.\n\n" +
+                "=== DADOS REAIS DO SISTEMA ===\n" +
+                contextText +
+                "=== FIM DOS DADOS ===";
 
             var requestBody = new
             {
