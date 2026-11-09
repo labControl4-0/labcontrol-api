@@ -15,5 +15,6 @@ namespace LabControlApi.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Plant> Plants { get; set; } = new List<Plant>();
+        public ICollection<UserDevice> Devices { get; set; } = new List<UserDevice>();
     }
 }
