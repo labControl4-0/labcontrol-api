@@ -13,6 +13,8 @@ namespace LabControlApi.Data
         public DbSet<Machine> Machines { get; set; }
         public DbSet<MachineMetric> MachineMetrics { get; set; }
         public DbSet<MachineEvent> MachineEvents { get; set; }
+        public DbSet<UserDevice> UserDevices { get; set; }
+        public DbSet<SyncOperationLog> SyncOperationLogs { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -74,6 +76,28 @@ namespace LabControlApi.Data
             {
                 entity.HasKey(me => me.Id);
                 entity.HasIndex(me => me.MachineId);
+            });
+
+            modelBuilder.Entity<UserDevice>(entity =>
+            {
+                entity.HasKey(ud => ud.Id);
+                entity.HasIndex(ud => new { ud.UserId, ud.DeviceToken }).IsUnique();
+                entity.HasIndex(ud => ud.DeviceToken);
+                entity.HasOne(ud => ud.User)
+                      .WithMany(u => u.Devices)
+                      .HasForeignKey(ud => ud.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<SyncOperationLog>(entity =>
+            {
+                entity.HasKey(sol => sol.Id);
+                entity.HasIndex(sol => new { sol.UserId, sol.ClientOperationId }).IsUnique();
+                entity.HasIndex(sol => sol.ProcessedAt);
+                entity.HasOne(sol => sol.User)
+                      .WithMany()
+                      .HasForeignKey(sol => sol.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Sector>()

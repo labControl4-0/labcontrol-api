@@ -44,9 +44,15 @@ builder.Services.AddScoped<IMachineMetricRepository, MachineMetricRepository>();
 builder.Services.AddScoped<IMachineMetricService, MachineMetricService>();
 builder.Services.AddScoped<IMachineEventRepository, MachineEventRepository>();
 builder.Services.AddScoped<IMachineEventService, MachineEventService>();
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ISyncService, SyncService>();
 
 builder.Services.AddScoped<LabControlApi.Services.Interfaces.IChatService, LabControlApi.Services.ChatService>();
 builder.Services.AddHttpClient("gemini");
+builder.Services.AddHttpClient("expo");
 
 // MQTT integration background service
 builder.Services.AddHostedService<LabControlApi.Services.MqttIntegrationService>();
