@@ -13,6 +13,8 @@ namespace LabControlApi.Data
         public DbSet<Machine> Machines { get; set; }
         public DbSet<MachineMetric> MachineMetrics { get; set; }
         public DbSet<MachineEvent> MachineEvents { get; set; }
+        public DbSet<PushDevice> PushDevices { get; set; }
+        public DbSet<PushDelivery> PushDeliveries { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -81,6 +83,19 @@ namespace LabControlApi.Data
                 .WithOne(m => m.Sector)
                 .HasForeignKey(m => m.SectorId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PushDevice>(entity =>
+            {
+                entity.HasKey(device => device.Token);
+                entity.HasIndex(device => device.UserId);
+                entity.HasIndex(device => device.RegistrationId).IsUnique();
+                entity.HasOne<User>().WithMany().HasForeignKey(device => device.UserId);
+            });
+
+            modelBuilder.Entity<PushDelivery>(entity =>
+            {
+                entity.HasIndex(delivery => new { delivery.Outcome, delivery.NextAttemptAt });
+            });
 
             modelBuilder.ApplyConfiguration<Sector>(new ModelConfiguration());
 		}

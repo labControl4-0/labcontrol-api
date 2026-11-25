@@ -47,6 +47,15 @@ builder.Services.AddScoped<IMachineEventService, MachineEventService>();
 
 builder.Services.AddScoped<LabControlApi.Services.Interfaces.IChatService, LabControlApi.Services.ChatService>();
 builder.Services.AddHttpClient("gemini");
+builder.Services.AddHttpClient("expo-push", client =>
+{
+    client.BaseAddress = new Uri("https://exp.host/--/api/v2/push/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+    var accessToken = builder.Configuration["ExpoPush:AccessToken"];
+    if (!string.IsNullOrWhiteSpace(accessToken))
+        client.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
+});
+builder.Services.AddHostedService<ExpoPushWorker>();
 
 // MQTT integration background service
 builder.Services.AddHostedService<LabControlApi.Services.MqttIntegrationService>();

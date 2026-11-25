@@ -130,6 +130,34 @@ namespace LabControlApi.Migrations
                     b.ToTable("MachineMetrics");
                 });
 
+            modelBuilder.Entity("LabControlApi.Models.PushDevice", b =>
+                {
+                    b.Property<string>("Token").HasColumnType("text");
+                    b.Property<Guid>("UserId").HasColumnType("uuid");
+                    b.Property<Guid>("RegistrationId").HasColumnType("uuid");
+                    b.Property<string>("Platform").IsRequired().HasColumnType("text");
+                    b.HasKey("Token");
+                    b.HasIndex("UserId");
+                    b.HasIndex("RegistrationId").IsUnique();
+                    b.ToTable("PushDevices");
+                });
+
+            modelBuilder.Entity("LabControlApi.Models.PushDelivery", b =>
+                {
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uuid");
+                    b.Property<Guid>("EventId").HasColumnType("uuid");
+                    b.Property<Guid>("UserId").HasColumnType("uuid");
+                    b.Property<Guid>("RegistrationId").HasColumnType("uuid");
+                    b.Property<DateTime>("NextAttemptAt").HasColumnType("timestamp with time zone");
+                    b.Property<int>("Attempts").HasColumnType("integer");
+                    b.Property<string>("TicketId").HasColumnType("text");
+                    b.Property<string>("Outcome").HasColumnType("text");
+                    b.HasKey("Id");
+                    b.HasIndex("EventId");
+                    b.HasIndex("Outcome", "NextAttemptAt");
+                    b.ToTable("PushDeliveries");
+                });
+
             modelBuilder.Entity("LabControlApi.Models.Plant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -360,6 +388,19 @@ namespace LabControlApi.Migrations
                 {
                     b.Navigation("Plants");
                 });
+            modelBuilder.Entity("LabControlApi.Models.PushDevice", b =>
+                {
+                    b.HasOne("LabControlApi.Models.User", null).WithMany()
+                        .HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                });
+
+            modelBuilder.Entity("LabControlApi.Models.PushDelivery", b =>
+                {
+                    b.HasOne("LabControlApi.Models.MachineEvent", "Event").WithMany()
+                        .HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                    b.Navigation("Event");
+                });
+
 #pragma warning restore 612, 618
         }
     }
