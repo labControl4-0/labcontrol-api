@@ -11,6 +11,8 @@ namespace LabControlApi.DTOs.Plant
         public decimal Scale { get; set; }
         public decimal WidthUnits { get; set; }
         public decimal HeightUnits { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

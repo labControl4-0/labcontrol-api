@@ -12,6 +12,8 @@ namespace LabControlApi.Models
         public decimal Scale { get; set; }
         public decimal WidthUnits { get; set; }
         public decimal HeightUnits { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

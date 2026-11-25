@@ -30,6 +30,8 @@ namespace LabControlApi.Services
                 Scale = p.Scale,
                 WidthUnits = p.WidthUnits,
                 HeightUnits = p.HeightUnits,
+                Latitude = p.Latitude,
+                Longitude = p.Longitude,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt
             });
@@ -49,6 +51,8 @@ namespace LabControlApi.Services
                 Scale = plant.Scale,
                 WidthUnits = plant.WidthUnits,
                 HeightUnits = plant.HeightUnits,
+                Latitude = plant.Latitude,
+                Longitude = plant.Longitude,
                 CreatedAt = plant.CreatedAt,
                 UpdatedAt = plant.UpdatedAt
             };
@@ -78,6 +82,8 @@ namespace LabControlApi.Services
                 Scale = newPlant.Scale,
                 WidthUnits = newPlant.WidthUnits,
                 HeightUnits = newPlant.HeightUnits,
+                Latitude = newPlant.Latitude,
+                Longitude = newPlant.Longitude,
                 CreatedAt = newPlant.CreatedAt,
                 UpdatedAt = newPlant.UpdatedAt
             };
@@ -100,6 +106,33 @@ namespace LabControlApi.Services
             plant.UpdatedAt = DateTime.UtcNow;
 
             await _plantRepository.UpdateAsync(plant);
+        }
+
+        public async Task<PlantResponseDto?> UpdatePlantLocation(Guid id, UpdatePlantLocationDto dto, Guid userId)
+        {
+            var plant = await _plantRepository.GetByIdAsync(id, userId);
+            if (plant == null) return null;
+
+            plant.Latitude = dto.Latitude;
+            plant.Longitude = dto.Longitude;
+            plant.UpdatedAt = DateTime.UtcNow;
+
+            await _plantRepository.UpdateAsync(plant);
+
+            return new PlantResponseDto
+            {
+                Id = plant.Id,
+                UserId = plant.UserId,
+                Name = plant.Name,
+                Description = plant.Description,
+                Scale = plant.Scale,
+                WidthUnits = plant.WidthUnits,
+                HeightUnits = plant.HeightUnits,
+                Latitude = plant.Latitude,
+                Longitude = plant.Longitude,
+                CreatedAt = plant.CreatedAt,
+                UpdatedAt = plant.UpdatedAt
+            };
         }
 
         public async Task DeletePlant(Guid id, Guid userId)

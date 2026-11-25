@@ -67,6 +67,18 @@ namespace LabControlApi.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}/location")]
+        public async Task<ActionResult<PlantResponseDto>> UpdatePlantLocation(Guid id, UpdatePlantLocationDto dto)
+        {
+            var userId = GetUserId();
+            var plant = await _plantService.UpdatePlantLocation(id, dto, userId);
+            if (plant == null)
+            {
+                return NotFound();
+            }
+            return Ok(plant);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(Guid id)
         {

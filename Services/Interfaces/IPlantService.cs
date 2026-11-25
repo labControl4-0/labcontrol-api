@@ -11,6 +11,7 @@ namespace LabControlApi.Services.Interfaces
         Task<PlantResponseDto?> GetPlant(Guid id, Guid userId);
         Task<PlantResponseDto> CreatePlant(CreatePlantDto dto, Guid userId);
         Task UpdatePlant(Guid id, UpdatePlantDto dto, Guid userId);
+        Task<PlantResponseDto?> UpdatePlantLocation(Guid id, UpdatePlantLocationDto dto, Guid userId);
         Task DeletePlant(Guid id, Guid userId);
     }
 }
